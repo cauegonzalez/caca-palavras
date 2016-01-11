@@ -1,4 +1,4 @@
-# caca-palavras
+# Caça-palavras
 
 Criação de um caça-palavras 10x10 posições que receba uma lista de palavras e as posicione aleatoriamente no quadro.
 
