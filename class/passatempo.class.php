@@ -55,7 +55,7 @@ class Passatempo
      */
     private function determinaDirecao($tamanhoPalavra, $altura, $largura)
     {
-        if (($tamanhoPalavra > $altura) && ($tamanhoPalavra > $altura))
+        if (($tamanhoPalavra > $altura) && ($tamanhoPalavra > $largura))
         {
             return $conseguiu;
         }
