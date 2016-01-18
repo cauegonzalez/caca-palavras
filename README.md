@@ -14,7 +14,6 @@ Criação de um caça-palavras 10x10 posições que receba uma lista de palavras
 Ao enviar o formulário, o próprio arquivo index.php é executado utilizando os parâmetros escolhidos no passo anterior.
 
 **Observações:** 
-* Não deve-se utilizar caracteres especiais nas palavras pois seu uso não foi tratado
 * Um pequeno relatório é exibido para informar quais palavras foram inseridas no quadro e quais não foram.
 * Principal motivo para não inserir uma palavra é a mesma possuir tamanho maior do que o quadro.
 * As palavras são posicionadas HORIZONTAL ou VERTICALMENTE, nunca na diagonal.
