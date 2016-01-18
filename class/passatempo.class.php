@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Classe responsável por criar o passatempo
  * 14/12/2015
@@ -83,6 +82,8 @@ class Passatempo
      */
     private function posicionaPalavra($altura, $largura, $palavra)
     {
+        // para permitir palavras com caracteres especiais, é necessário removê-los
+        $palavra = $this->retiraCaracteresEspeciais($palavra);
         $tamanhoPalavra = strlen($palavra);
 
         if (($tamanhoPalavra > $altura) && ($tamanhoPalavra > $largura))
@@ -244,26 +245,43 @@ class Passatempo
      */
     private function imprimeMatrizCacaPalavras($altura, $largura)
     {
-        // escreve o início da tabela HTML que conterá o quadro do caça-palavras
-        echo "<table class='table table-bordered table-condensed'>
-                <tbody>";
+        $strColuna = "";
+        $strLinhas = "";
+        $strTabela = "";
+        $templateColuna = file_get_contents("templates/colunas.template.html");
+        $templateLinhas = file_get_contents("templates/linhas.template.html");
+        $templateTabela = file_get_contents("templates/tabela.template.html");
         // percorre todas as posições da matriz e imprime na tela
         for ($i = 0; $i < $largura; $i++)
         {
-            // imprime o início da linha
-            echo "<tr>";
             for ($j = 0; $j < $altura; $j++)
             {
-                // imprime o início da coluna
-                echo "<td>";
-                // imprime o valor da posição atual
-                echo $this->matrizCacaPalavras[$i][$j]."&nbsp;";
-                echo "</td>";
+                // monta a coluna com seu respectivo valor
+                $strColuna .= str_replace("{COLUNA}", $this->matrizCacaPalavras[$i][$j], $templateColuna);
             }
-            echo "</tr>";
+            //monta a linha
+            $strLinhas .= str_replace("{COLUNAS}", $strColuna, $templateLinhas);
+            //reinicializa variável das colunas
+            $strColuna = "";
         }
-        echo "</tbody>
-            </table>";
+
+        $strTabela = str_replace("{LINHAS}", $strLinhas, $templateTabela);
+        // escreve a tabela HTML que conterá o quadro do caça-palavras
+        echo $strTabela;
+    }
+
+    private function retiraCaracteresEspeciais($elemento)
+    {
+        $arrayChaves  = array('á','à','ã','â','ä','é','è','ê','ë','í','ì','î','ï','ó','ò','õ','ô','ö','ú','ù','û','ü','ç','Á','À','Ã','Â','Ä','É','È','Ê','Ë','Í','Ì','Î','Ï','Ó','Ò','Õ','Ö','Ô','Ú','Ù','Û','Ü','Ç',' ', ',');
+        $arrayValores = array('A','A','A','A','A','E','E','E','E','I','I','I','I','O','O','O','O','O','U','U','U','U','C','A','A','A','A','A','E','E','E','E','I','I','I','I','O','O','O','O','O','U','U','U','U','C','','');
+        if (sizeof($elemento) == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return str_replace($arrayChaves, $arrayValores, $elemento);
+        }
     }
 
     /**
@@ -278,11 +296,16 @@ class Passatempo
      */
     public function novoCacaPalavras($largura, $altura, $completar, $arrayPalavras)
     {
-        // primeiramente, cria a matriz com o tamanho especificado
+        // retira palavras em branco
+        $arrayDasPalavras = array_filter($arrayPalavras);
+        // converte tudo para letras maiúsculas para ficar mais apresentável
+        $arrayDasPalavras = array_map('strtoupper', $arrayDasPalavras);
+
+        // cria a matriz com o tamanho especificado
         $this->criaMatrizCacaPalavras($altura, $largura);
 
         // tenta inserir cada palavra informada no array
-        foreach ($arrayPalavras as $palavra)
+        foreach ($arrayDasPalavras as $palavra)
         {
             // se conseguir posicionar a palavra na matriz, posiciona e insere a mesma no array de palavras Adicionadas
             if ($this->posicionaPalavra($altura, $largura, $palavra))
@@ -302,8 +325,16 @@ class Passatempo
         }
 
         $this->imprimeMatrizCacaPalavras($altura, $largura);
-        echo "<pre>PalavrasAdicionadas:<br />".print_r($this->arrayPalavrasAdicionadas, 1)."</pre>";
-        echo "<pre>PalavrasNaoAdicionadas:<br />".print_r($this->arrayPalavrasNaoAdicionadas, 1)."</pre>";
+
+        $stringAdicionadas = file_get_contents("templates/palavrasAdicionadas.template.html");
+        $words = print_r($this->arrayPalavrasAdicionadas, 1);
+        $stringAdicionadas = str_replace("{PALAVRAS_ADICIONADAS}", $words, $stringAdicionadas);
+        echo $stringAdicionadas;
+
+        $stringNaoAdicionadas = file_get_contents("templates/palavrasNaoAdicionadas.template.html");
+        $words = print_r($this->arrayPalavrasNaoAdicionadas, 1);
+        $stringNaoAdicionadas = str_replace("{PALAVRAS_NAO_ADICIONADAS}", $words, $stringNaoAdicionadas);
+        echo $stringNaoAdicionadas;
     }
 
     /**
@@ -325,7 +356,7 @@ class Passatempo
                 // se a célula estiver vazia, preencher com uma letra aleatória
                 if ($this->matrizCacaPalavras[$i][$j] == "")
                 {
-                    $arrayLetras = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                    $arrayLetras = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
                     $letraRandomica = $arrayLetras[rand(0, 25)];
                     $this->matrizCacaPalavras[$i][$j] = $letraRandomica;
                 }
