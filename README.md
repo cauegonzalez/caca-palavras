@@ -18,4 +18,3 @@ Ao enviar o formulário, o próprio arquivo index.php é executado utilizando os
 * Principal motivo para não inserir uma palavra é a mesma possuir tamanho maior do que o quadro.
 * As palavras são posicionadas HORIZONTAL ou VERTICALMENTE, nunca na diagonal.
 * Nenhuma validação client-side foi realizada e nem todas as que seriam necessárias server-side foram implementadas. O foco principal foi fazer funcionar.
-* Funciona
